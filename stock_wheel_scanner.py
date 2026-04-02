@@ -138,5 +138,4 @@ if st.button("🔥 Wöchentlichen Scan starten (3–8 Min)", type="primary"):
 
         st.success("✅ Scan fertig! Alle Filter sind jetzt getrennt.")
 
-st.info("App ist jetzt genau auf deine Regel angepasst. Wheel bleibt konservativ, Hebel ist aggressiv growth-fokussiert. Starte den Scan!")
-stock_wheel_scanner.py hinzugefügt
+st.info
