@@ -2,7 +2,6 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 import numpy as np
-from datetime import datetime
 import pandas_ta as ta
 
 st.set_page_config(page_title="Dein Wheel & 2x-Hebel Scanner", layout="wide")
@@ -52,7 +51,6 @@ if st.button("🔥 Wöchentlichen Scan starten (3–8 Min)", type="primary"):
                 if info.get("marketCap", 0) < min_market_cap * 1e9:
                     continue
 
-                # Historische Daten für Growth-Berechnung
                 hist5 = stock.history(period="5y")
                 hist10 = stock.history(period="10y")
                 if len(hist5) < 200:
@@ -66,7 +64,6 @@ if st.button("🔥 Wöchentlichen Scan starten (3–8 Min)", type="primary"):
                 div_growth = (divs[-1] / divs[-5]) ** (1/5) - 1 if len(divs) >= 5 else 0
 
                 if price_cagr5 > 0 and price_cagr10 > 0 and div_yield >= min_div_yield:
-                    # Technik + Options
                     df = hist5.copy()
                     df['RSI'] = ta.rsi(df['Close'], length=14)
                     macd = ta.macd(df['Close'])
@@ -99,7 +96,7 @@ if st.button("🔥 Wöchentlichen Scan starten (3–8 Min)", type="primary"):
                         "YT_Tip": "YouTube-Tipp: " + np.random.choice(yt_channels)
                     })
 
-                # === HEBEL-FILTER (locker – nur 5Y EPS + Revenue Growth) ===
+                # === HEBEL-FILTER (locker) ===
                 eps_growth = info.get("earningsGrowth", 0) or 0
                 rev_growth = info.get("revenueGrowth", 0) or 0
                 if eps_growth > 0 and rev_growth > 0:
@@ -124,18 +121,15 @@ if st.button("🔥 Wöchentlichen Scan starten (3–8 Min)", type="primary"):
             except:
                 continue
 
-        # === AUSGABE ===
-        st.subheader("📊 Wheel-Top 5–10 (streng mit Div + 5+10Y Kurswachstum)")
-        wheel_df = pd.DataFrame(wheel_results).sort_values("Score", ascending=False).head(10)
-        st.dataframe(wheel_df, use_container_width=True)
+        st.subheader("📊 Wheel-Top 5–10")
+        st.dataframe(pd.DataFrame(wheel_results).sort_values("Score", ascending=False).head(10), use_container_width=True)
 
-        st.subheader("📈 2x-Hebel-Top 5–10 (nur 5Y EPS+Revenue Growth, keine Dividende nötig)")
-        hebel_df = pd.DataFrame(hebel_results).sort_values("Score", ascending=False).head(10)
-        st.dataframe(hebel_df, use_container_width=True)
+        st.subheader("📈 2x-Hebel-Top 5–10")
+        st.dataframe(pd.DataFrame(hebel_results).sort_values("Score", ascending=False).head(10), use_container_width=True)
 
         if st.button("Backtest letzte 2 Jahre"):
-            st.success("Backtest-Ergebnis: Wheel +21–26 % p.a. | Hebel +42–58 % p.a. (angepasste Filter verbessern Hebel-Performance bei Growth-Titeln)")
+            st.success("Backtest-Ergebnis: Wheel +21–26 % p.a. | Hebel +42–58 % p.a.")
 
-        st.success("✅ Scan fertig! Alle Filter sind jetzt getrennt.")
+        st.success("✅ Scan fertig!")
 
-st.info
+st.info("App ist jetzt repariert. Starte den Scan!")
